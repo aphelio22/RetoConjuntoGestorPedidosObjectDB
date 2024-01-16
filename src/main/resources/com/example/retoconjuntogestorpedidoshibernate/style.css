@@ -1,0 +1,228 @@
+/**
+* Estilo para las celdas de tabla cuando el cursor está sobre ellas.
+*/
+    .table-cell:hover {
+        -fx-background-color: #ffe800;
+        -fx-text-background-color: white;
+    }
+
+/**
+* Elimina el borde de las celdas vacías en la tabla.
+*/
+    .table-row-cell:empty .table-cell{
+        -fx-border-width: 0px;
+    }
+
+/**
+ * Estilo para las celdas vacías en la tabla cuando el cursor está sobre ellas.
+ */
+    .table-row-cell:empty .table-cell:empty:hover{
+        -fx-background-color: whitesmoke;
+    }
+
+/**
+* Centra el contenido de las celdas de filas llenas en la tabla.
+*/
+    .table-cell:filled {
+        -fx-alignment: CENTER;
+    }
+
+/**
+* Estilo para filas cuando el ratón se encuentra sobre ellas.
+*/
+    .table-view:row-selection .table-row-cell:filled:hover {
+        -fx-background-color: #ffb500;
+        -fx-text-background-color: #d3ebff;
+    }
+
+/**
+* Estilo para filas seleccionadas cuando el ratón se encuentra sobre ellas.
+*/
+    .table-view:row-selection .table-row-cell:filled:selected:hover {
+        -fx-background-color: #ffa400;
+    }
+
+/**
+* Estilo para filas seleccionadas por el usuario.
+*/
+    .table-view:row-selection .table-row-cell:filled:selected {
+        -fx-background-color: #ffa400;
+    }
+
+/**
+* Elimina el borde del table que aparece cuando el mismo tiene el foco.
+*/
+    .table-view, .table-view:focused {
+        -fx-background-color: transparent,-fx-box-border,-fx-control-inner-background;
+        -fx-background-insets: -1.4, 0, 1;
+        -fx-background-radius: 1.4, 0, 0;
+    }
+
+/**
+* Estilo para centrar y cambiar el color de los títulos de columnas.
+*/
+    .table-view .column-header .label{
+        -fx-text-fill: #ffa400;
+        -fx-alignment: CENTER;
+    }
+
+/**
+* Estilo para el fondo del título de columna cuando el ratón está sobre él.
+*/
+    .table-view .column-header:hover {
+        -fx-background-color: whitesmoke;
+    }
+
+/**
+* Estilo para el tamaño, bordes y color de fondo de los títulos.
+*/
+    .table-view .column-header, .table-view .filler {
+        -fx-background-color: white;
+        -fx-size: 45;
+        -fx-border-width: 0 1 3 0;
+        -fx-border-insets: 0;
+    }
+
+/**
+* Hace transparente el fondo de los títulos.
+*/
+    .table-view .column-header-background {
+        -fx-background-color: transparent;
+    }
+
+/**
+ * Estilo para etiquetas de texto.
+ */
+    .label{
+        -fx-font: 13px "Roboto";
+        -fx-font-weight: bold;
+    }
+
+/**
+* Estilo para menús y elementos de menú.
+*/
+    .menu, .menu .menu-item {
+        -fx-background-color: transparent;
+    }
+
+/**
+* Estilo para etiquetas con ID "labelPedidos".
+*/
+   #labelBienvenida {
+       -fx-font-size: 24px;
+       -fx-text-fill: #ff9300;
+    }
+/**
+ * Estilo para etiquetas con ID "labelNombreTienda".
+ */
+   #labelPedidos {
+       -fx-font-size: 20px;
+       -fx-text-fill: #ff9300;
+   }
+
+   #labelSeleccionCantidad{
+       -fx-font-size: 16px;
+       -fx-text-fill: #ffffff;
+   }
+
+   #labelSeleccionProducto{
+       -fx-font-size: 16px;
+       -fx-text-fill: #ffffff;
+   }
+
+   #labelAnhadir{
+       -fx-font-size: 20px;
+       -fx-text-fill: #ff9300;
+   }
+
+/**
+* Estilo para la etiqueta con ID "labelNombreTienda".
+*/
+#labelNombreTienda{
+    -fx-font-size: 16px;
+    -fx-text-fill: #cc5b02;
+}
+
+/**
+ * Estilo para contenedor con ID "contenedor".
+ */
+    #contenedor {
+        -fx-background-color: linear-gradient(to bottom, #ffffff, #ff9300); /* Cambia los colores como desees */
+    }
+
+/**
+ * Estilo para contenedor con ID "contenedorLogin".
+ */
+    #contenedorLogin {
+        -fx-background-color: linear-gradient(to bottom, #ffffff, #ffbe49);
+    }
+
+/**
+ * Estilo para barra de menú con ID "menuBar".
+ */
+    #menuBar{
+        -fx-background-color: linear-gradient(to top, #fffaf4, #ffffff);
+    }
+
+/**
+ * Estilo para la barra de menú con ID "menuBarDetalles".
+ */
+    #menuBarDetalles{
+        -fx-background-color: linear-gradient(to top, #fffdfb, #ffffff);
+    }
+
+/**
+ * Estilo para el texto en elementos de menú.
+ */
+    #menuText > .label{
+        -fx-text-fill: #cc5b02;
+    }
+
+/**
+ * Estilo para elementos de menú cuando el cursor está sobre ellos.
+ */
+    #menuText:hover{
+        -fx-background-color: #ffe800;
+    }
+
+/**
+ * Estilo para el texto en elementos de menú.
+ */
+    #menuItem > .label{
+        -fx-text-fill: #cc5b02;
+    }
+
+/**
+ * Estilo para elementos de menú cuando el cursor está sobre ellos.
+ */
+    #menuItem:hover{
+        -fx-background-color: #ffe800;
+    }
+
+/**
+ * Estilo para etiquetas con ID "loginUser".
+ */
+    #loginUser{
+        -fx-font-size: 20px;
+        -fx-text-fill: #ffffff;
+    }
+
+/**
+ * Estilo para etiquetas con ID "loginPassword".
+ */
+    #loginPassword{
+        -fx-font-size: 20px;
+        -fx-text-fill: #ffffff;
+    }
+
+/**
+ * Estilo para botones.
+ */
+    .button {
+        -fx-background-color: #ffffff;
+        -fx-text-fill: #ff9300;
+        -fx-font: 13px "Roboto";
+        -fx-font-weight: bold;
+    }
+
+

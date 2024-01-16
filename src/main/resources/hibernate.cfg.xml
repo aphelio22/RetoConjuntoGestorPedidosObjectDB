@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD//EN"
+        "http://hibernate.org/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <!-- a SessionFactory instance listed as /jndi/name -->
+    <session-factory>
+        <!-- properties -->
+        <!-- Para la config de Hibernate -->
+        <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/retodos</property>
+        <property name="hibernate.connection.password">Enterprise1701Voyager74656</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="show_sql">true</property>
+        <!--Esto hay que añadirlo-->
+        <mapping class = "com.example.retoconjuntogestorpedidoshibernate.domain.usuario.Usuario"/>
+        <mapping class = "com.example.retoconjuntogestorpedidoshibernate.domain.item.Item"/>
+        <mapping class = "com.example.retoconjuntogestorpedidoshibernate.domain.pedido.Pedido"/>
+        <mapping class = "com.example.retoconjuntogestorpedidoshibernate.domain.producto.Producto"/>
+    </session-factory>
+</hibernate-configuration>
