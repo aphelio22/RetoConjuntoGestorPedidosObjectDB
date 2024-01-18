@@ -1,12 +1,14 @@
 package com.example.retoconjuntogestorpedidoshibernate.domain.item;
 
 import com.example.retoconjuntogestorpedidoshibernate.domain.DAO;
-import com.example.retoconjuntogestorpedidoshibernate.domain.HibernateUtil;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.hibernate.query.Query;
+import com.example.retoconjuntogestorpedidoshibernate.domain.ObjectDBUtil;
+import com.example.retoconjuntogestorpedidoshibernate.domain.pedido.Pedido;
 
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Clase que implementa el acceso a datos para la entidad Item.
@@ -22,9 +24,12 @@ public class ItemDAO implements DAO<Item> {
     @Override
     public ArrayList<Item> getAll() {
         var salida = new ArrayList<Item>(0);
-        try (Session sesion = HibernateUtil.getSessionFactory().openSession()) {
-            Query<Item> query = sesion.createQuery("from Item", Item.class);
+        EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
+        try{
+            TypedQuery<Item> query = entityManager.createQuery("select i from Item i", Item.class);
             salida = (ArrayList<Item>) query.getResultList();
+        } finally {
+            entityManager.close();
         }
         return salida;
     }
@@ -49,26 +54,16 @@ public class ItemDAO implements DAO<Item> {
      */
     @Override
     public Item save(Item data) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Transaction transaction = null;
-            try {
-                //Comienza la transacción.
-                transaction = session.beginTransaction();
-
-                //Guarda el nuevo ítem en la Base de Datos.
-                session.save(data);
-
-                //Commit de la transacción.
-                transaction.commit();
-            } catch (Exception e) {
-                //Maneja cualquier excepción que pueda ocurrir durante la transacción.
-                if (transaction != null) {
-                    transaction.rollback();
-                }
-                e.printStackTrace();
-            }
-            return data;
+        EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
+        try {
+            entityManager.getTransaction().begin();
+            entityManager.persist(data);
+            entityManager.flush();
+            entityManager.getTransaction().commit();
+        }finally {
+            entityManager.close();
         }
+        return data;
     }
 
     /**
@@ -77,8 +72,8 @@ public class ItemDAO implements DAO<Item> {
      * @param data El ítem que se desea actualizar en la Base de Datos.
      */
     @Override
-    public void update(Item data) {
-        //Do nothing.
+    public Item update(Item data) {
+        return null;
     }
 
     /**
@@ -88,9 +83,30 @@ public class ItemDAO implements DAO<Item> {
      */
     @Override
     public void delete(Item data) {
-        HibernateUtil.getSessionFactory().inTransaction(session -> {
-            Item item = session.get(Item.class, data.getId());
-            session.remove(item);
-        });
+        EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
+        try {
+            entityManager.getTransaction().begin();
+            entityManager.merge(data);
+            entityManager.remove(data);
+            entityManager.getTransaction().commit();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            entityManager.close();
+        }
+    }
+
+    @Override
+    public void saveAll(List<Item> data) {
+        EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
+        try{
+            entityManager.getTransaction().begin();
+            for (Item i : data) {
+                entityManager.persist(i);
+            }
+            entityManager.getTransaction().commit();
+        } finally {
+            entityManager.close();
+        }
     }
 }

@@ -1,6 +1,15 @@
 package com.example.retoconjuntogestorpedidoshibernate;
 
 
+import com.example.retoconjuntogestorpedidoshibernate.domain.Data;
+import com.example.retoconjuntogestorpedidoshibernate.domain.item.Item;
+import com.example.retoconjuntogestorpedidoshibernate.domain.item.ItemDAO;
+import com.example.retoconjuntogestorpedidoshibernate.domain.pedido.Pedido;
+import com.example.retoconjuntogestorpedidoshibernate.domain.pedido.PedidoDAO;
+import com.example.retoconjuntogestorpedidoshibernate.domain.producto.Producto;
+import com.example.retoconjuntogestorpedidoshibernate.domain.producto.ProductoDAO;
+import com.example.retoconjuntogestorpedidoshibernate.domain.usuario.Usuario;
+import com.example.retoconjuntogestorpedidoshibernate.domain.usuario.UsuarioDAO;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -8,6 +17,7 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * La clase HelloApplication es la clase principal de la aplicación JavaFX.
@@ -24,6 +34,26 @@ public class HelloApplication extends Application {
      */
     @Override
     public void start(Stage stage) throws IOException {
+
+
+        UsuarioDAO usuarioDAO = new UsuarioDAO();
+        List<Usuario> usuarios = Data.generarUsuarios();
+        usuarioDAO.saveAll(usuarios);
+
+        PedidoDAO pedidoDAO = new PedidoDAO();
+        List<Pedido> pedidos = Data.generarPedidos();
+        pedidoDAO.saveAll(pedidos);
+
+        ProductoDAO productoDAO = new ProductoDAO();
+        List<Producto> productos = Data.generarProductos();
+        productoDAO.saveAll(productos);
+
+        ItemDAO itemDAO = new ItemDAO();
+        List<Item> items = Data.generarItems();
+        itemDAO.saveAll(items);
+
+        Data.asignarPedidosAUsuarios(pedidos);
+
         myStage = stage;
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("login-controller.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 600, 400);

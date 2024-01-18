@@ -1,6 +1,7 @@
 package com.example.retoconjuntogestorpedidoshibernate.domain;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Interfaz genérica para operaciones básicas en la Base de Datos.
@@ -37,7 +38,7 @@ public interface DAO<T> {
      *
      * @param data el elemento del tipo T a actualizar.
      */
-    public void update(T data);
+    public T update(T data);
 
     /**
      * Elimina un elemento del tipo T de la Base de Datos.
@@ -45,4 +46,6 @@ public interface DAO<T> {
      * @param data el elemento del tipo T a eliminar
      */
     public void delete(T data);
+
+    public void saveAll(List<T> data);
 }

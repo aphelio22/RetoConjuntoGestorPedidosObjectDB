@@ -1,17 +1,14 @@
 package com.example.retoconjuntogestorpedidoshibernate.domain.pedido;
 
 import com.example.retoconjuntogestorpedidoshibernate.domain.DAO;
-import com.example.retoconjuntogestorpedidoshibernate.domain.HibernateUtil;
+import com.example.retoconjuntogestorpedidoshibernate.domain.ObjectDBUtil;
 import com.example.retoconjuntogestorpedidoshibernate.domain.item.Item;
 import com.example.retoconjuntogestorpedidoshibernate.domain.usuario.Usuario;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.hibernate.query.Query;
 
-import java.text.SimpleDateFormat;
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
+import java.util.List;
 
 /**
  * Clase que implementa el acceso a datos para la entidad Pedido.
@@ -27,9 +24,12 @@ public class PedidoDAO implements DAO<Pedido> {
     @Override
     public ArrayList<Pedido> getAll() {
         var salida = new ArrayList<Pedido>(0);
-        try(Session sesion = HibernateUtil.getSessionFactory().openSession()){
-            Query<Pedido> query = sesion.createQuery("from Pedido", Pedido.class);
+        EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
+        try{
+            TypedQuery<Pedido> query = entityManager.createQuery("select ped from Pedido ped", Pedido.class);
             salida = (ArrayList<Pedido>) query.getResultList();
+        } finally {
+            entityManager.close();
         }
         return salida;
     }
@@ -42,9 +42,17 @@ public class PedidoDAO implements DAO<Pedido> {
      */
     @Override
     public Pedido get(Integer id) {
-        var salida = new Pedido();
-        try(Session session = HibernateUtil.getSessionFactory().openSession()){
-            salida = session.get(Pedido.class, id);
+        Pedido salida = null;
+        EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
+        try{
+            TypedQuery<Pedido> query = entityManager.createQuery("select ped from Pedido ped where ped.id = :id", Pedido.class);
+            query.setParameter("id", id);
+            var resultado = query.getResultList();
+            if (resultado.size() > 0) {
+                salida = resultado.get(0);
+            }
+        } finally {
+            entityManager.close();
         }
         return salida;
     }
@@ -57,26 +65,16 @@ public class PedidoDAO implements DAO<Pedido> {
      */
     @Override
     public Pedido save(Pedido data) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Transaction transaction = null;
-            try {
-                //Comienza la transacción.
-                transaction = session.beginTransaction();
-
-                //Guarda el nuevo ítem en la Base de Datos.
-                session.save(data);
-
-                //Commit de la transacción.
-                transaction.commit();
-            } catch (Exception e) {
-                //Maneja cualquier excepción que pueda ocurrir durante la transacción.
-                if (transaction != null) {
-                    transaction.rollback();
-                }
-                e.printStackTrace();
-            }
-            return data;
+        EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
+        try {
+            entityManager.getTransaction().begin();
+            entityManager.persist(data);
+            entityManager.flush();
+            entityManager.getTransaction().commit();
+        }finally {
+            entityManager.close();
         }
+        return data;
     }
 
     /**
@@ -85,28 +83,18 @@ public class PedidoDAO implements DAO<Pedido> {
      * @param data El pedido que se desea actualizar en la Base de Datos.
      */
     @Override
-    public void update(Pedido data) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        Transaction transaction = null;
-
+    public Pedido update(Pedido data) {
+        EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
         try {
-            //Comienza la transacción.
-            transaction = session.beginTransaction();
-
-            //Actualiza el pedido en la Base de Datos.
-            session.update(data);
-
-            //Commit de la transacción.
-            transaction.commit();
+            entityManager.getTransaction().begin();
+            entityManager.merge(data);
+            entityManager.getTransaction().toString();
         } catch (Exception e) {
-            //Maneja cualquier excepción que pueda ocurrir durante la transacción.
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         } finally {
-            session.close();
+            entityManager.close();
         }
+        return data;
     }
 
     /**
@@ -116,9 +104,30 @@ public class PedidoDAO implements DAO<Pedido> {
      */
     @Override
     public void delete(Pedido data) {
-        HibernateUtil.getSessionFactory().inTransaction(session -> {
-            Pedido pedido = session.get(Pedido.class, data.getId());
-            session.remove(pedido);
-        });
+        EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
+        try {
+            entityManager.getTransaction().begin();
+            entityManager.merge(data);
+            entityManager.remove(data);
+            entityManager.getTransaction().commit();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            entityManager.close();
+        }
+    }
+
+    @Override
+    public void saveAll(List<Pedido> data) {
+        EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
+        try{
+            entityManager.getTransaction().begin();
+            for (Pedido p : data) {
+                entityManager.persist(p);
+            }
+            entityManager.getTransaction().commit();
+        } finally {
+            entityManager.close();
+        }
     }
 }

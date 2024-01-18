@@ -1,8 +1,10 @@
 package com.example.retoconjuntogestorpedidoshibernate.domain.producto;
 
-import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
+import javax.persistence.*;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -11,8 +13,13 @@ import java.io.Serializable;
  */
 @Data
 @Entity
-@Table(name = "Producto")
+@NoArgsConstructor
 public class Producto implements Serializable {
+    public Producto(String nombre, Double precio, Integer cantidad_disponible) {
+        this.nombre = nombre;
+        this.precio = precio;
+        this.cantidad_disponible = cantidad_disponible;
+    }
 
     /**
      * Id del prodcuto.
@@ -24,19 +31,16 @@ public class Producto implements Serializable {
     /**
      * Nombre del prodcuto.
      */
-    @Column(name = "nombre")
     private String nombre;
 
     /**
      * Precio del producto.
      */
-    @Column(name = "precio")
     private Double precio;
 
     /**
      * Cantidad disponible del producto.
      */
-    @Column(name = "cantidad_disponible")
     private Integer cantidad_disponible;
 
     /**

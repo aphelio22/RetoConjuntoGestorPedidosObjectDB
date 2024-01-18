@@ -4,8 +4,6 @@ package com.example.retoconjuntogestorpedidoshibernate.controllers;
 
 import com.example.retoconjuntogestorpedidoshibernate.HelloApplication;
 import com.example.retoconjuntogestorpedidoshibernate.Sesion;
-import com.example.retoconjuntogestorpedidoshibernate.domain.HibernateUtil;
-import com.example.retoconjuntogestorpedidoshibernate.domain.item.Item;
 import com.example.retoconjuntogestorpedidoshibernate.domain.pedido.Pedido;
 import com.example.retoconjuntogestorpedidoshibernate.domain.pedido.PedidoDAO;
 import com.example.retoconjuntogestorpedidoshibernate.domain.usuario.UsuarioDAO;
@@ -17,8 +15,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
-import org.hibernate.Session;
-import org.hibernate.query.Query;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -203,7 +199,7 @@ public class PedidosUsuarioController implements Initializable {
      */
     @FXML
     public void anhadir(ActionEvent actionEvent) {
-        Pedido nuevoPedido = new Pedido();
+        /*Pedido nuevoPedido = new Pedido();
 
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             //Obtiene el último código de pedido.
@@ -252,7 +248,7 @@ public class PedidosUsuarioController implements Initializable {
         //Después de la alerta, lleva a la ventana DetallesPedidoController del respectivo pedido.
         HelloApplication.loadFXMLDetalles("detallesPedido-controller.fxml");
 
-
+*/
     }
 
     /**

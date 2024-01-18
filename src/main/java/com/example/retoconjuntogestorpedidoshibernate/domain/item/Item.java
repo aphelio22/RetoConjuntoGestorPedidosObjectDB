@@ -2,10 +2,12 @@ package com.example.retoconjuntogestorpedidoshibernate.domain.item;
 
 import com.example.retoconjuntogestorpedidoshibernate.domain.pedido.Pedido;
 import com.example.retoconjuntogestorpedidoshibernate.domain.producto.Producto;
-import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
+import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.Entity;
 import java.io.Serializable;
 
 /**
@@ -14,12 +16,15 @@ import java.io.Serializable;
  */
 @Data
 @Entity
-@Table(name = "Item")
+@NoArgsConstructor
 public class Item implements Serializable {
 
-    /**
-     * Id del item del pedido.
-     */
+    public Item(Pedido codigo_pedido, Integer cantidad, Producto producto) {
+        this.codigo_pedido = codigo_pedido;
+        this.cantidad = cantidad;
+        this.producto = producto;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -27,22 +32,20 @@ public class Item implements Serializable {
     /**
      * Código del pedido asociado.
      */
-    @ManyToOne
-    @JoinColumn(name = "codigo_pedido", referencedColumnName = "codigo_pedido")
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Pedido codigo_pedido;
 
     /**
      * Cantidad del producto que hay contenido en el item.
      */
-    @Column(name = "cantidad")
     private Integer cantidad;
 
     /**
      * Producto que hay contenido en el item.
      */
-    @OneToOne
-    @JoinColumn(name = "producto")
+    @OneToOne(cascade = CascadeType.PERSIST)
     private Producto producto;
+
 
 
     /**

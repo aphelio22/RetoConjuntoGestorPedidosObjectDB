@@ -1,13 +1,15 @@
 package com.example.retoconjuntogestorpedidoshibernate.domain.usuario;
 
 import com.example.retoconjuntogestorpedidoshibernate.domain.DAO;
-import com.example.retoconjuntogestorpedidoshibernate.domain.HibernateUtil;
+import com.example.retoconjuntogestorpedidoshibernate.domain.ObjectDBUtil;
+import com.example.retoconjuntogestorpedidoshibernate.domain.item.Item;
 import com.example.retoconjuntogestorpedidoshibernate.exceptions.UsuarioInexistente;
-import jakarta.persistence.NoResultException;
-import org.hibernate.Session;
-import org.hibernate.query.Query;
+import javax.persistence.NoResultException;
 
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Clase que implementa el acceso a datos para la entidad Usuario.
@@ -23,9 +25,12 @@ public class UsuarioDAO implements DAO<Usuario> {
     @Override
     public ArrayList<Usuario> getAll() {
         var salida = new ArrayList<Usuario>(0);
-        try(Session sesion = HibernateUtil.getSessionFactory().openSession()){
-            Query<Usuario> query = sesion.createQuery("from Usuario", Usuario.class);
+        EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
+        try{
+            TypedQuery<Usuario> query = entityManager.createQuery("select u from Usuario u", Usuario.class);
             salida = (ArrayList<Usuario>) query.getResultList();
+        } finally {
+            entityManager.close();
         }
         return salida;
     }
@@ -38,9 +43,17 @@ public class UsuarioDAO implements DAO<Usuario> {
      */
     @Override
     public Usuario get(Integer id) {
-        var salida = new Usuario();
-        try(Session session = HibernateUtil.getSessionFactory().openSession()){
-            salida = session.get(Usuario.class, id);
+        Usuario salida = null;
+        EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
+        try{
+            TypedQuery<Usuario> query = entityManager.createQuery("select u from Usuario u where u.id = :id", Usuario.class);
+            query.setParameter("id", id);
+            var resultado = query.getResultList();
+            if (resultado.size() > 0) {
+                salida = resultado.get(0);
+            }
+        } finally {
+            entityManager.close();
         }
         return salida;
     }
@@ -63,8 +76,8 @@ public class UsuarioDAO implements DAO<Usuario> {
      * @param data El usuario que se desea actualizar en la Base de Datos.
      */
     @Override
-    public void update(Usuario data) {
-        //Do nothing.
+    public Usuario update(Usuario data) {
+        return null;
     }
 
     /**
@@ -77,35 +90,52 @@ public class UsuarioDAO implements DAO<Usuario> {
         //Do nothing.
     }
 
+    @Override
+    public void saveAll(List<Usuario> data) {
+        EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
+        try{
+            entityManager.getTransaction().begin();
+            for (Usuario u : data) {
+                entityManager.persist(u);
+            }
+            entityManager.getTransaction().commit();
+        } finally {
+            entityManager.close();
+        }
+    }
+
     /**
      * Valida la existencia de un usuario en la Base de Datos.
      *
-     * @param username El nombre de usuario (email) que se va a validar.
+     * @param email El nombre de usuario (email) que se va a validar.
      * @param password La contraseña asociada al usuario que se va a validar.
      * @return El objeto Usuario si se encuentra en la Base de Datos, de lo contrario, retorna null.
      * @throws UsuarioInexistente Excepción lanzada cuando el usuario no existe en la Base de Datos.
      */
-    public Usuario validateUser(String username, String password) throws UsuarioInexistente {
+    public Usuario validateUser(String email, String password) throws UsuarioInexistente {
         Usuario result = null;
+        EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
 
+        try {
+            TypedQuery<Usuario> query = entityManager.createQuery("select u from Usuario u where u.email = :email and u.contrasenha = :password", Usuario.class);
+            query.setParameter("email", email);
+            query.setParameter("password", password);
 
-        try(Session session = HibernateUtil.getSessionFactory().openSession()){
-            //Se crea una consulta para obtener el usuario por su nombre de usuario (email) y contraseña.
-            Query<Usuario> query = session.createQuery("from Usuario where email=:u and contrasenha=:p", Usuario.class);
-
-            //Se establecen los parámetros de la consulta.
-            query.setParameter("u", username);
-            query.setParameter("p", password);
-
+            List<Usuario> resultList = query.getResultList();
+            System.out.println("Número de resultados: " + resultList.size());
+            for (Usuario user : resultList) {
+                System.out.println("Usuario: " + user);
+            }
 
             try {
-                //Se intenta obtener un único resultado de la consulta.
                 result = query.getSingleResult();
-            } catch (NoResultException e){
-                //Si no se encuentra ningún resultado, se lanza una excepción UsuarioInexistente.
+            } catch (NoResultException e) {
                 throw new UsuarioInexistente("Usuario inexistente");
+            }
+        } finally {
+            entityManager.close();
         }
+
         return result;
     }
-}
 }

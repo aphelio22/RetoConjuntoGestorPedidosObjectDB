@@ -1,12 +1,15 @@
 package com.example.retoconjuntogestorpedidoshibernate.domain.producto;
 
 import com.example.retoconjuntogestorpedidoshibernate.domain.DAO;
-import com.example.retoconjuntogestorpedidoshibernate.domain.HibernateUtil;
-import com.example.retoconjuntogestorpedidoshibernate.domain.pedido.Pedido;
-import org.hibernate.Session;
-import org.hibernate.query.Query;
+import com.example.retoconjuntogestorpedidoshibernate.domain.ObjectDBUtil;
+import com.example.retoconjuntogestorpedidoshibernate.domain.item.Item;
+import com.example.retoconjuntogestorpedidoshibernate.domain.usuario.Usuario;
 
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Clase que implementa el acceso a datos para la entidad Producto.
@@ -22,9 +25,12 @@ public class ProductoDAO implements DAO<Producto> {
     @Override
     public ArrayList<Producto> getAll() {
         var salida = new ArrayList<Producto>(0);
-        try(Session sesion = HibernateUtil.getSessionFactory().openSession()){
-            Query<Producto> query = sesion.createQuery("from Producto", Producto.class);
+        EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
+        try{
+            TypedQuery<Producto> query = entityManager.createQuery("select p from Producto p", Producto.class);
             salida = (ArrayList<Producto>) query.getResultList();
+        } finally {
+            entityManager.close();
         }
         return salida;
     }
@@ -59,8 +65,8 @@ public class ProductoDAO implements DAO<Producto> {
      * @param data El producto que se desea actualizar en la Base de Datos.
      */
     @Override
-    public void update(Producto data) {
-        //Do nothing.
+    public Producto update(Producto data) {
+        return null;
     }
 
     /**
@@ -71,5 +77,19 @@ public class ProductoDAO implements DAO<Producto> {
     @Override
     public void delete(Producto data) {
         //Do nothing.
+    }
+
+    @Override
+    public void saveAll(List<Producto> data) {
+        EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
+        try{
+            entityManager.getTransaction().begin();
+            for (Producto pr : data) {
+                entityManager.persist(pr);
+            }
+            entityManager.getTransaction().commit();
+        } finally {
+            entityManager.close();
+        }
     }
 }
