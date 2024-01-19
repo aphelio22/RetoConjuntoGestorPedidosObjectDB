@@ -35,24 +35,19 @@ public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
 
+        try {
+            UsuarioDAO usuarioDAO = new UsuarioDAO();
+            List<Usuario> usuarios = Data.generarUsuarios();
+            usuarioDAO.saveAll(usuarios);
 
-        UsuarioDAO usuarioDAO = new UsuarioDAO();
-        List<Usuario> usuarios = Data.generarUsuarios();
-        usuarioDAO.saveAll(usuarios);
 
-        PedidoDAO pedidoDAO = new PedidoDAO();
-        List<Pedido> pedidos = Data.generarPedidos();
-        pedidoDAO.saveAll(pedidos);
+            ProductoDAO productoDAO = new ProductoDAO();
+            List<Producto> productos = Data.generarProductos();
+            productoDAO.saveAll(productos);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
 
-        ProductoDAO productoDAO = new ProductoDAO();
-        List<Producto> productos = Data.generarProductos();
-        productoDAO.saveAll(productos);
-
-        ItemDAO itemDAO = new ItemDAO();
-        List<Item> items = Data.generarItems();
-        itemDAO.saveAll(items);
-
-        Data.asignarPedidosAUsuarios(pedidos);
 
         myStage = stage;
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("login-controller.fxml"));

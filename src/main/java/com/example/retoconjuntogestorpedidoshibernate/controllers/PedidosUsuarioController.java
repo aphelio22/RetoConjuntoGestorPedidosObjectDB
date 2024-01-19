@@ -4,6 +4,7 @@ package com.example.retoconjuntogestorpedidoshibernate.controllers;
 
 import com.example.retoconjuntogestorpedidoshibernate.HelloApplication;
 import com.example.retoconjuntogestorpedidoshibernate.Sesion;
+import com.example.retoconjuntogestorpedidoshibernate.domain.ObjectDBUtil;
 import com.example.retoconjuntogestorpedidoshibernate.domain.pedido.Pedido;
 import com.example.retoconjuntogestorpedidoshibernate.domain.pedido.PedidoDAO;
 import com.example.retoconjuntogestorpedidoshibernate.domain.usuario.UsuarioDAO;
@@ -15,6 +16,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.TypedQuery;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -199,12 +204,13 @@ public class PedidosUsuarioController implements Initializable {
      */
     @FXML
     public void anhadir(ActionEvent actionEvent) {
-        /*Pedido nuevoPedido = new Pedido();
+        Pedido nuevoPedido = new Pedido();
 
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            //Obtiene el último código de pedido.
-            Query<String> query = session.createQuery("select max(p.codigo_pedido) from Pedido p", String.class);
-            String ultimoCodigoPedido = query.uniqueResult();
+        EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
+
+        try {
+            TypedQuery<String> query = entityManager.createQuery("select MAX(p.codigoPedido) FROM Pedido p", String.class);
+            String ultimoCodigoPedido = query.getSingleResult();
 
             //Incrementa el último código de pedido.
             int ultimoNumero = Integer.parseInt(ultimoCodigoPedido.substring(4));
@@ -248,7 +254,6 @@ public class PedidosUsuarioController implements Initializable {
         //Después de la alerta, lleva a la ventana DetallesPedidoController del respectivo pedido.
         HelloApplication.loadFXMLDetalles("detallesPedido-controller.fxml");
 
-*/
     }
 
     /**

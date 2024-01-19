@@ -114,6 +114,7 @@ public class UsuarioDAO implements DAO<Usuario> {
      */
     public Usuario validateUser(String email, String password) throws UsuarioInexistente {
         Usuario result = null;
+        ArrayList<Usuario> lista = new ArrayList<>();
         EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
 
         try {
@@ -121,14 +122,19 @@ public class UsuarioDAO implements DAO<Usuario> {
             query.setParameter("email", email);
             query.setParameter("password", password);
 
+            lista = (ArrayList<Usuario>) query.getResultList();
+
+            /*
             List<Usuario> resultList = query.getResultList();
             System.out.println("Número de resultados: " + resultList.size());
             for (Usuario user : resultList) {
                 System.out.println("Usuario: " + user);
             }
+            */
 
             try {
-                result = query.getSingleResult();
+                result = lista.get(0);
+                System.out.println(result);
             } catch (NoResultException e) {
                 throw new UsuarioInexistente("Usuario inexistente");
             }

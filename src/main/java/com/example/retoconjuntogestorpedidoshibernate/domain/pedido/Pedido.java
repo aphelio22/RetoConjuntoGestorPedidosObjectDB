@@ -4,6 +4,7 @@ import com.example.retoconjuntogestorpedidoshibernate.domain.item.Item;
 import com.example.retoconjuntogestorpedidoshibernate.domain.usuario.Usuario;
 import javax.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.Objects;
  */
 @Data
 @Entity
+@NoArgsConstructor
 public class Pedido implements Serializable {
 
     public Pedido(String codigo_pedido, String fecha, Double total, Usuario usuario, List<Item> items) {
