@@ -25,7 +25,7 @@ public class Producto implements Serializable {
      * Id del prodcuto.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Integer id;
 
     /**

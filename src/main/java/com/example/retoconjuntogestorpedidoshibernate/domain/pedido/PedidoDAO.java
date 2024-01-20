@@ -82,15 +82,17 @@ public class PedidoDAO implements DAO<Pedido> {
      *
      * @param data El pedido que se desea actualizar en la Base de Datos.
      */
-    @Override
     public Pedido update(Pedido data) {
         EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
         try {
             entityManager.getTransaction().begin();
-            entityManager.merge(data);
-            entityManager.getTransaction().toString();
+            // Utiliza el método merge para actualizar la entidad en la base de datos.
+            data = entityManager.merge(data);
+            entityManager.getTransaction().commit();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            // Maneja la excepción adecuadamente (puede imprimir o lanzar una excepción personalizada).
+            e.printStackTrace();
+            entityManager.getTransaction().rollback();
         } finally {
             entityManager.close();
         }

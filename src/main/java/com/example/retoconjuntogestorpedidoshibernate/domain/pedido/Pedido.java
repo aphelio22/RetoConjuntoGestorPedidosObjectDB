@@ -31,7 +31,7 @@ public class Pedido implements Serializable {
      * Id del pedido.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Integer id;
 
     /**
@@ -52,7 +52,7 @@ public class Pedido implements Serializable {
     /**
      * Usuario que ha realizado el pedido.
      */
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     private Usuario usuario;
 
     /**

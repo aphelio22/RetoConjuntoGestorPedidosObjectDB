@@ -69,6 +69,9 @@ public class LoginController implements Initializable {
             alert.setContentText("Bienvenid@, " + usuario.getNombre() + ".");
             alert.showAndWait();
 
+            UsuarioDAO usuarioDAO = new UsuarioDAO();
+            System.out.println(usuarioDAO.getAll());
+
             // Carga la ventana PedidosUsuarioController.
             HelloApplication.loadFXMLUsuario("pedidosUsuario-controller.fxml");
 

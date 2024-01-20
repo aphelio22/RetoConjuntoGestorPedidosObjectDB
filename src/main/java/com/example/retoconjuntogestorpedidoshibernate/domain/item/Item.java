@@ -26,13 +26,13 @@ public class Item implements Serializable {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Integer id;
 
     /**
      * Código del pedido asociado.
      */
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     private Pedido codigo_pedido;
 
     /**
@@ -43,7 +43,7 @@ public class Item implements Serializable {
     /**
      * Producto que hay contenido en el item.
      */
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne
     private Producto producto;
 
 

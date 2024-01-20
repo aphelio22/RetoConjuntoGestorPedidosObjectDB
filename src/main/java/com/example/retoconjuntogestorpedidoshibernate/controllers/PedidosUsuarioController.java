@@ -204,24 +204,32 @@ public class PedidosUsuarioController implements Initializable {
      */
     @FXML
     public void anhadir(ActionEvent actionEvent) {
+
         Pedido nuevoPedido = new Pedido();
 
         EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
 
-        try {
-            TypedQuery<String> query = entityManager.createQuery("select MAX(p.codigoPedido) FROM Pedido p", String.class);
-            String ultimoCodigoPedido = query.getSingleResult();
 
-            //Incrementa el último código de pedido.
-            int ultimoNumero = Integer.parseInt(ultimoCodigoPedido.substring(4));
-            int nuevoNumero = ultimoNumero + 1;
-            String nuevoCodigoPedido = "PED-" + String.format("%03d", nuevoNumero);
+            try {
+                TypedQuery<String> query = entityManager.createQuery("select MAX(p.codigo_pedido) FROM Pedido p", String.class);
+                System.out.println(query);
 
-            //Establece el nuevo código de pedido en el pedido.
-            nuevoPedido.setCodigo_pedido(nuevoCodigoPedido);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+                    String ultimoCodigoPedido = query.getSingleResult();
+                if (ultimoCodigoPedido != null) {
+                    //Incrementa el último código de pedido.
+                    int ultimoNumero = Integer.parseInt(ultimoCodigoPedido.substring(4));
+                    int nuevoNumero = ultimoNumero + 1;
+                    String nuevoCodigoPedido = "PED-" + String.format("%03d", nuevoNumero);
+                    //Establece el nuevo código de pedido en el pedido.
+                    nuevoPedido.setCodigo_pedido(nuevoCodigoPedido);
+                }else {
+                    nuevoPedido.setCodigo_pedido("PED-001");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
 
         //Establece la fecha actual por defecto.
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -250,6 +258,8 @@ public class PedidosUsuarioController implements Initializable {
         alert.setHeaderText("Tu pedido ha sido creado");
         alert.setContentText("Código de pedido: " + Sesion.getPedido().getCodigo_pedido());
         alert.showAndWait();
+
+        System.out.println(pedidoDAO.getAll());
 
         //Después de la alerta, lleva a la ventana DetallesPedidoController del respectivo pedido.
         HelloApplication.loadFXMLDetalles("detallesPedido-controller.fxml");

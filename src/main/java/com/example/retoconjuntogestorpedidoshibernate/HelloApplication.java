@@ -37,13 +37,22 @@ public class HelloApplication extends Application {
 
         try {
             UsuarioDAO usuarioDAO = new UsuarioDAO();
-            List<Usuario> usuarios = Data.generarUsuarios();
-            usuarioDAO.saveAll(usuarios);
+            List<Usuario> usuarios = usuarioDAO.getAll();
 
+            // Verificar si ya existen usuarios en la base de datos
+            if (usuarios.isEmpty()) {
+                usuarios = Data.generarUsuarios();
+                usuarioDAO.saveAll(usuarios);
+            }
 
             ProductoDAO productoDAO = new ProductoDAO();
-            List<Producto> productos = Data.generarProductos();
-            productoDAO.saveAll(productos);
+            List<Producto> productos = productoDAO.getAll();
+
+            // Verificar si ya existen productos en la base de datos
+            if (productos.isEmpty()) {
+                productos = Data.generarProductos();
+                productoDAO.saveAll(productos);
+            }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
