@@ -206,15 +206,11 @@ public class PedidosUsuarioController implements Initializable {
     public void anhadir(ActionEvent actionEvent) {
 
         Pedido nuevoPedido = new Pedido();
-
         EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
-
 
             try {
                 TypedQuery<String> query = entityManager.createQuery("select MAX(p.codigo_pedido) FROM Pedido p", String.class);
                 System.out.println(query);
-
-
                     String ultimoCodigoPedido = query.getSingleResult();
                 if (ultimoCodigoPedido != null) {
                     //Incrementa el último código de pedido.
@@ -223,21 +219,35 @@ public class PedidosUsuarioController implements Initializable {
                     String nuevoCodigoPedido = "PED-" + String.format("%03d", nuevoNumero);
                     //Establece el nuevo código de pedido en el pedido.
                     nuevoPedido.setCodigo_pedido(nuevoCodigoPedido);
-                }else {
+                }else { //Si no hay pedidos en la Base de Datos, el código de pedido será por defecto 'PED-001'.
                     nuevoPedido.setCodigo_pedido("PED-001");
                 }
+
+                System.out.println(pedidoDAO.getAll());
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-
         //Establece la fecha actual por defecto.
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String fechaActual = dateFormat.format(new Date());
-        nuevoPedido.setFecha(fechaActual);
 
+        nuevoPedido.setFecha(fechaActual);
         nuevoPedido.setUsuario(Sesion.getUsuario());
-        nuevoPedido.setId(0);
+
+        try {
+            TypedQuery<Integer> query = entityManager.createQuery("select MAX(p.id) FROM Pedido p", Integer.class);
+            System.out.println(query);
+            Integer ultimoId = query.getSingleResult();
+                if (ultimoId != null){
+                    nuevoPedido.setId(ultimoId + 1);
+                } else {
+                    nuevoPedido.setId(1);
+                }
+            System.out.println(ultimoId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         //Si el pedido no tiene items dentro el total se establece a '0.0'.
         if (nuevoPedido.getItems().isEmpty()) {

@@ -79,6 +79,11 @@ public class ProductoDAO implements DAO<Producto> {
         //Do nothing.
     }
 
+    /**
+     * Guarda una lista de productos en la Base de Datos.
+     *
+     * @param data La lista de productos a ser guardados en la Base de Datos.
+     */
     @Override
     public void saveAll(List<Producto> data) {
         EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();

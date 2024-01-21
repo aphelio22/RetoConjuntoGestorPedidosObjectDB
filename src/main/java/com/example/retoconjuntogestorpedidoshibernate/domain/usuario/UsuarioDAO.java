@@ -90,6 +90,11 @@ public class UsuarioDAO implements DAO<Usuario> {
         //Do nothing.
     }
 
+    /**
+     * Guarda una lista de usuarios en la Base de Datos.
+     *
+     * @param data La lista de usuarios a ser guardados en la Base de Datos.
+     */
     @Override
     public void saveAll(List<Usuario> data) {
         EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
@@ -123,14 +128,6 @@ public class UsuarioDAO implements DAO<Usuario> {
             query.setParameter("password", password);
 
             lista = (ArrayList<Usuario>) query.getResultList();
-
-            /*
-            List<Usuario> resultList = query.getResultList();
-            System.out.println("Número de resultados: " + resultList.size());
-            for (Usuario user : resultList) {
-                System.out.println("Usuario: " + user);
-            }
-            */
 
             try {
                 result = lista.get(0);

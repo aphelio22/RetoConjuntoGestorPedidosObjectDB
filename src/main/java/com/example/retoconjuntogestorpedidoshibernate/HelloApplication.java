@@ -57,7 +57,6 @@ public class HelloApplication extends Application {
             System.out.println(e.getMessage());
         }
 
-
         myStage = stage;
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("login-controller.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 600, 400);

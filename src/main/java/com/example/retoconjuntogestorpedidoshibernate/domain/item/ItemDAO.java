@@ -86,16 +86,27 @@ public class ItemDAO implements DAO<Item> {
         EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
         try {
             entityManager.getTransaction().begin();
-            entityManager.merge(data);
+            // Si la entidad no está gestionada, primero la adjuntamos al contexto de persistencia.
+            if (!entityManager.contains(data)) {
+                data = entityManager.merge(data);
+            }
             entityManager.remove(data);
             entityManager.getTransaction().commit();
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            if (entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().rollback();
+            }
         } finally {
             entityManager.close();
         }
     }
 
+    /**
+     * Guarda una lista de items en la Base de Datos.
+     *
+     * @param data La lista de items a ser guardados en la Base de Datos.
+     */
     @Override
     public void saveAll(List<Item> data) {
         EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();

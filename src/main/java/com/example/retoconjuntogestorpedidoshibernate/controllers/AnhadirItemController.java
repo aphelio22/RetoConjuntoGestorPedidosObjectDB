@@ -2,6 +2,7 @@ package com.example.retoconjuntogestorpedidoshibernate.controllers;
 
 import com.example.retoconjuntogestorpedidoshibernate.HelloApplication;
 import com.example.retoconjuntogestorpedidoshibernate.Sesion;
+import com.example.retoconjuntogestorpedidoshibernate.domain.ObjectDBUtil;
 import com.example.retoconjuntogestorpedidoshibernate.domain.item.Item;
 import com.example.retoconjuntogestorpedidoshibernate.domain.item.ItemDAO;
 import com.example.retoconjuntogestorpedidoshibernate.domain.pedido.Pedido;
@@ -15,6 +16,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -82,6 +85,7 @@ public class AnhadirItemController implements Initializable {
      */
     @Deprecated
     public void aceptar(ActionEvent actionEvent) {
+        EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
 
         //Se crea una instancia de Pedido con el pedido actual de la sesión.
         Pedido pedido = Sesion.getPedido();
@@ -102,6 +106,20 @@ public class AnhadirItemController implements Initializable {
             item.setCodigo_pedido(pedido);
             item.setCantidad(spCantidad.getValue());
             item.setProducto(productoSeleccionado);
+
+            try {
+                TypedQuery<Integer> query = entityManager.createQuery("select MAX(i.id) FROM Item i", Integer.class);
+                System.out.println(query);
+                Integer ultimoId = query.getSingleResult();
+                if (ultimoId != null){
+                    item.setId(ultimoId + 1);
+                } else {
+                    item.setId(1);
+                }
+                System.out.println(ultimoId);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             Sesion.setItem((new ItemDAO()).save(item));
             Sesion.setItem(item);

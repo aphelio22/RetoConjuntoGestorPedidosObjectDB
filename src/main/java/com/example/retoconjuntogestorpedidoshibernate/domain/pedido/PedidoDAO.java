@@ -104,21 +104,31 @@ public class PedidoDAO implements DAO<Pedido> {
      *
      * @param data El pedido que se desea eliminar de la Base de Datos.
      */
-    @Override
     public void delete(Pedido data) {
         EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
         try {
             entityManager.getTransaction().begin();
-            entityManager.merge(data);
+            // Si la entidad no está gestionada, primero la adjuntamos al contexto de persistencia.
+            if (!entityManager.contains(data)) {
+                data = entityManager.merge(data);
+            }
             entityManager.remove(data);
             entityManager.getTransaction().commit();
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            if (entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().rollback();
+            }
         } finally {
             entityManager.close();
         }
     }
 
+    /**
+     * Guarda una lista de pedidos en la Base de Datos.
+     *
+     * @param data La lista de pedidos a ser guardados en la Base de Datos.
+     */
     @Override
     public void saveAll(List<Pedido> data) {
         EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
