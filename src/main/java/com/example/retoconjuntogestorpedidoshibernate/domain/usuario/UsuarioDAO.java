@@ -135,6 +135,8 @@ public class UsuarioDAO implements DAO<Usuario> {
             } catch (NoResultException e) {
                 throw new UsuarioInexistente("Usuario inexistente");
             }
+        } catch (IndexOutOfBoundsException e){
+            throw new UsuarioInexistente("Usuario inexistente");
         } finally {
             entityManager.close();
         }

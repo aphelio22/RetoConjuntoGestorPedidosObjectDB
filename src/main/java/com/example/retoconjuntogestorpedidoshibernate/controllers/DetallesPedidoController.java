@@ -217,13 +217,13 @@ public class DetallesPedidoController implements Initializable {
                 //Calcula el nuevo total del pedido y lo actualiza en la Base de Datos.
                 Pedido pedidoActual = Sesion.getPedido();
                 Double nuevoTotal = calcularTotalPedido(pedidoActual) - (itemSeleccionado.getProducto().getPrecio() * itemSeleccionado.getCantidad()) ;
-                System.out.println(nuevoTotal);
                 pedidoActual.setTotal(nuevoTotal);
 
                 //Actualiza el total del pedido en la Base de Datos
                 PedidoDAO pedidoDAO = new PedidoDAO();
                 pedidoDAO.update(pedidoActual);
             }
+            System.out.println("Items: " + itemDAO.getAll());
         } else {
             //Muestra un mensaje de error o advertencia al usuario si no se ha seleccionado ningún pedido para eliminar.
             Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -268,45 +268,67 @@ public class DetallesPedidoController implements Initializable {
         }
     }
 
+    /**
+     * Método asociado al evento de visualización de un pedido. Este método utiliza JasperReports
+     * para generar y mostrar un informe detallado del pedido actual en un nuevo escenario.
+     *
+     * @param actionEvent El evento de acción que desencadena la visualización del pedido.
+     */
     @FXML
     public void visualizarPedido(ActionEvent actionEvent) {
+        /*
+        //Obtiene el código del pedido actual desde la sesión.
         String codigo_pedido = Sesion.getPedido().getCodigo_pedido();
+        //Crea un nuevo escenario para mostrar el informe.
         Stage primaryStage = new Stage();
         System.out.println(codigo_pedido);
         try {
+            //Establece la conexión a la Base de Datos.
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/RetoDos", "root", "Enterprise1701Voyager74656");
 
+            //Configura los parámetros del informe, en este caso, el código del pedido.
             HashMap<String, Object> hashMap = new HashMap<>();
             hashMap.put("cod_pedido", codigo_pedido);
 
+            //Llena el informe Jasper utilizando los parámetros y la conexión a la Base de Datos.
             JasperPrint jasperPrint = JasperFillManager.fillReport("reportePedido.jasper", hashMap, connection);
 
+            //Crea un nodo Swing para integrar el visor de informes Jasper en la aplicación JavaFX.
             SwingNode swingNode = new SwingNode();
-            createSwingContent(swingNode, jasperPrint);
+            contenidoEnSwing(swingNode, jasperPrint);
 
+            //Configura la interfaz gráfica del nuevo escenario.
             StackPane root = new StackPane();
             root.getChildren().add(swingNode);
-
             Scene scene = new Scene(root, 800, 600);
-
             primaryStage.getIcons().add(new Image("C:\\Users\\jrgal\\IdeaProjects\\RetoConjuntoGestorPedidosHibernate\\src\\main\\resources\\images\\gatitoAmazonasFelizIconoApp.png", 100, 100, true, true));
             primaryStage.setTitle("Detalles Pedido");
             primaryStage.setScene(scene);
             primaryStage.show();
 
+            //Exporta el informe a un archivo PDF llamado "pedido.pdf".
             JRPdfExporter exp = new JRPdfExporter();
             exp.setExporterInput(new SimpleExporterInput(jasperPrint));
             exp.setExporterOutput(new SimpleOutputStreamExporterOutput("pedido.pdf"));
             exp.setConfiguration(new SimplePdfExporterConfiguration());
             exp.exportReport();
-        } catch (SQLException e) {
+        } catch (SQLException e) { //Manejo de excepciones.
             throw new RuntimeException(e);
-        } catch (JRException e) {
+        } catch (JRException e) { //Manejo de excepciones.
             throw new RuntimeException(e);
         }
+         */
     }
-    private void createSwingContent(final SwingNode swingNode, JasperPrint jasperPrint) {
+
+    /**
+     * Método que encapsula la lógica para integrar el visor de informes Jasper en un nodo Swing.
+     *
+     * @param swingNode    El nodo Swing que contendrá el visor de informes Jasper.
+     * @param jasperPrint  El informe Jasper a mostrar.
+     */
+    private void contenidoEnSwing(final SwingNode swingNode, JasperPrint jasperPrint) {
         SwingUtilities.invokeLater(() -> {
+            //Crea un visor Jasper y lo establece como contenido del nodo Swing.
             JRViewer viewer = new JRViewer(jasperPrint);
             swingNode.setContent(viewer);
         });

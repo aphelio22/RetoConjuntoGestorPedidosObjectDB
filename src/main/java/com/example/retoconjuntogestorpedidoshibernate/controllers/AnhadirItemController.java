@@ -83,9 +83,8 @@ public class AnhadirItemController implements Initializable {
      *
      * @param actionEvent El evento de acción que desencadena la operación.
      */
-    @Deprecated
+    @FXML
     public void aceptar(ActionEvent actionEvent) {
-        EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
 
         //Se crea una instancia de Pedido con el pedido actual de la sesión.
         Pedido pedido = Sesion.getPedido();
@@ -102,29 +101,39 @@ public class AnhadirItemController implements Initializable {
             alert.setContentText("Cantidad de producto disponible: " + productoSeleccionado.getCantidad_disponible());
             alert.showAndWait();
         } else {
-            Item item = new Item();
-            item.setCodigo_pedido(pedido);
-            item.setCantidad(spCantidad.getValue());
-            item.setProducto(productoSeleccionado);
+            Item nuevoItem = new Item();
+            nuevoItem.setCodigo_pedido(pedido);
+            nuevoItem.setCantidad(spCantidad.getValue());
+            nuevoItem.setProducto(productoSeleccionado);
 
-            try {
-                TypedQuery<Integer> query = entityManager.createQuery("select MAX(i.id) FROM Item i", Integer.class);
-                System.out.println(query);
-                Integer ultimoId = query.getSingleResult();
-                if (ultimoId != null){
-                    item.setId(ultimoId + 1);
-                } else {
-                    item.setId(1);
-                }
-                System.out.println(ultimoId);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            establecerId(nuevoItem);
 
-            Sesion.setItem((new ItemDAO()).save(item));
-            Sesion.setItem(item);
+            Sesion.setItem((new ItemDAO()).save(nuevoItem));
+            Sesion.setItem(nuevoItem);
 
             HelloApplication.loadFXMLDetalles("detallesPedido-controller.fxml");
+        }
+    }
+
+    /**
+     * Establece el id para el nuevo item.
+     *
+     * @param item Item al que se le establecerá el nuevo id.
+     */
+    private void establecerId(Item item) {
+        EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
+        try {
+            TypedQuery<Integer> query = entityManager.createQuery("select MAX(i.id) FROM Item i", Integer.class);
+            Integer ultimoId = query.getSingleResult();
+            if (ultimoId != null){
+                //Incrementa y establece el último id.
+                item.setId(ultimoId + 1);
+            } else { //Si no hay items en la Base de Datos, el id será por defecto '1'.
+                item.setId(1);
+            }
+            System.out.println(ultimoId);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -133,7 +142,7 @@ public class AnhadirItemController implements Initializable {
      *
      * @param actionEvent El evento de acción que desencadena la operación.
      */
-    @Deprecated
+    @FXML
     public void logOut(ActionEvent actionEvent) {
         //Se settea el usuario actual a null y vuelve al LoginController.
         Sesion.setUsuario(null);
@@ -145,7 +154,7 @@ public class AnhadirItemController implements Initializable {
      *
      * @param actionEvent El evento de acción que desencadena la operación.
      */
-    @Deprecated
+    @FXML
     public void mostrarAcercaDe(ActionEvent actionEvent) {
         // Muestra información "Acerca de" en una ventana de diálogo.
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -160,7 +169,7 @@ public class AnhadirItemController implements Initializable {
      *
      * @param actionEvent El evento de acción que desencadena la operación.
      */
-    @Deprecated
+    @FXML
     public void volverAtrás(ActionEvent actionEvent) {
         //Vuelve a la pantalla inmediatamente anterior.
         HelloApplication.loadFXMLDetalles("detallesPedido-controller.fxml");

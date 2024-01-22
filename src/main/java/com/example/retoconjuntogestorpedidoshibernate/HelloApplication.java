@@ -39,7 +39,7 @@ public class HelloApplication extends Application {
             UsuarioDAO usuarioDAO = new UsuarioDAO();
             List<Usuario> usuarios = usuarioDAO.getAll();
 
-            // Verificar si ya existen usuarios en la base de datos
+            //Verifica si ya existen usuarios en la Base de Datos.
             if (usuarios.isEmpty()) {
                 usuarios = Data.generarUsuarios();
                 usuarioDAO.saveAll(usuarios);
@@ -48,7 +48,7 @@ public class HelloApplication extends Application {
             ProductoDAO productoDAO = new ProductoDAO();
             List<Producto> productos = productoDAO.getAll();
 
-            // Verificar si ya existen productos en la base de datos
+            //Verifica si ya existen productos en la Base de Datos.
             if (productos.isEmpty()) {
                 productos = Data.generarProductos();
                 productoDAO.saveAll(productos);

@@ -5,6 +5,7 @@ package com.example.retoconjuntogestorpedidoshibernate.controllers;
 import com.example.retoconjuntogestorpedidoshibernate.HelloApplication;
 import com.example.retoconjuntogestorpedidoshibernate.Sesion;
 import com.example.retoconjuntogestorpedidoshibernate.domain.ObjectDBUtil;
+import com.example.retoconjuntogestorpedidoshibernate.domain.item.ItemDAO;
 import com.example.retoconjuntogestorpedidoshibernate.domain.pedido.Pedido;
 import com.example.retoconjuntogestorpedidoshibernate.domain.pedido.PedidoDAO;
 import com.example.retoconjuntogestorpedidoshibernate.domain.usuario.UsuarioDAO;
@@ -206,48 +207,10 @@ public class PedidosUsuarioController implements Initializable {
     public void anhadir(ActionEvent actionEvent) {
 
         Pedido nuevoPedido = new Pedido();
-        EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
-
-            try {
-                TypedQuery<String> query = entityManager.createQuery("select MAX(p.codigo_pedido) FROM Pedido p", String.class);
-                System.out.println(query);
-                    String ultimoCodigoPedido = query.getSingleResult();
-                if (ultimoCodigoPedido != null) {
-                    //Incrementa el último código de pedido.
-                    int ultimoNumero = Integer.parseInt(ultimoCodigoPedido.substring(4));
-                    int nuevoNumero = ultimoNumero + 1;
-                    String nuevoCodigoPedido = "PED-" + String.format("%03d", nuevoNumero);
-                    //Establece el nuevo código de pedido en el pedido.
-                    nuevoPedido.setCodigo_pedido(nuevoCodigoPedido);
-                }else { //Si no hay pedidos en la Base de Datos, el código de pedido será por defecto 'PED-001'.
-                    nuevoPedido.setCodigo_pedido("PED-001");
-                }
-
-                System.out.println(pedidoDAO.getAll());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        //Establece la fecha actual por defecto.
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String fechaActual = dateFormat.format(new Date());
-
-        nuevoPedido.setFecha(fechaActual);
+        establecerId(nuevoPedido);
+        establecerCodigoPedido(nuevoPedido);
+        establecerFecha(nuevoPedido);
         nuevoPedido.setUsuario(Sesion.getUsuario());
-
-        try {
-            TypedQuery<Integer> query = entityManager.createQuery("select MAX(p.id) FROM Pedido p", Integer.class);
-            System.out.println(query);
-            Integer ultimoId = query.getSingleResult();
-                if (ultimoId != null){
-                    nuevoPedido.setId(ultimoId + 1);
-                } else {
-                    nuevoPedido.setId(1);
-                }
-            System.out.println(ultimoId);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         //Si el pedido no tiene items dentro el total se establece a '0.0'.
         if (nuevoPedido.getItems().isEmpty()) {
@@ -269,11 +232,67 @@ public class PedidosUsuarioController implements Initializable {
         alert.setContentText("Código de pedido: " + Sesion.getPedido().getCodigo_pedido());
         alert.showAndWait();
 
-        System.out.println(pedidoDAO.getAll());
-
         //Después de la alerta, lleva a la ventana DetallesPedidoController del respectivo pedido.
         HelloApplication.loadFXMLDetalles("detallesPedido-controller.fxml");
 
+    }
+
+    /**
+     * Establece el id para el nuevo pedido.
+     *
+     * @param pedido Pedido al que se le establecerá el nuevo id.
+     */
+    private void establecerId(Pedido pedido) {
+        EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
+        try {
+            TypedQuery<Integer> query = entityManager.createQuery("select MAX(p.id) FROM Pedido p", Integer.class);
+            Integer ultimoId = query.getSingleResult();
+            if (ultimoId != null){
+                //Incrementa y establece el último id.
+                pedido.setId(ultimoId + 1);
+            } else { //Si no hay pedidos en la Base de Datos, el id será por defecto '1'.
+                pedido.setId(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Establece el código de pedido para el nuevo pedido.
+     *
+     * @param pedido Pedido al que se le establecerá el nuevo código de pedido.
+     */
+    private void establecerCodigoPedido(Pedido pedido) {
+        EntityManager entityManager = ObjectDBUtil.getEntityManagerFactory().createEntityManager();
+        try {
+            TypedQuery<String> query = entityManager.createQuery("select MAX(p.codigo_pedido) FROM Pedido p", String.class);
+            String ultimoCodigoPedido = query.getSingleResult();
+            if (ultimoCodigoPedido != null) {
+                //Incrementa el último código de pedido.
+                Integer ultimoNumero = Integer.parseInt(ultimoCodigoPedido.substring(4));
+                Integer nuevoNumero = ultimoNumero + 1;
+                String nuevoCodigoPedido = "PED-" + String.format("%03d", nuevoNumero);
+                //Establece el nuevo código de pedido.
+                pedido.setCodigo_pedido(nuevoCodigoPedido);
+            }else { //Si no hay pedidos en la Base de Datos, el código de pedido será por defecto 'PED-001'.
+                pedido.setCodigo_pedido("PED-001");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Establece la fecha del nuevo pedido.
+     *
+     * @param pedido Pedido al que se le establecerá la fecha.
+     */
+    private void establecerFecha(Pedido pedido) {
+        //Establece la fecha actual por defecto.
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String fechaActual = dateFormat.format(new Date());
+        pedido.setFecha(fechaActual);
     }
 
     /**
@@ -283,6 +302,7 @@ public class PedidosUsuarioController implements Initializable {
      */
     @FXML
     public void eliminar(ActionEvent actionEvent) {
+        ItemDAO itemDAO = new ItemDAO();
         //Se coge el pedido seleccionado.
         Pedido pedidoSeleccionado = tvPedidos.getSelectionModel().getSelectedItem();
 
@@ -297,6 +317,8 @@ public class PedidosUsuarioController implements Initializable {
                 pedidoDAO.delete(pedidoSeleccionado);
                 observableList.remove(pedidoSeleccionado);
             }
+            System.out.println("Pedidos: " + pedidoDAO.getAll());
+            System.out.println("Items: " + itemDAO.getAll());
         } else {
             //Muestra un mensaje de error o advertencia al usuario si no se ha seleccionado ningún pedido para eliminar.
             Alert alert = new Alert(Alert.AlertType.WARNING);

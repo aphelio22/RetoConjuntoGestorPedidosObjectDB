@@ -25,6 +25,9 @@ public class Item implements Serializable {
         this.producto = producto;
     }
 
+    /**
+     * Id del item.
+     */
     @Id
     @GeneratedValue
     private Integer id;
